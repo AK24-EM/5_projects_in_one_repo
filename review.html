@@ -2,145 +2,430 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Full Image Carousel with Navbar + Sidebar</title>
+  <title>Enhanced Image Carousel with Navbar + Sidebar</title>
   <style>
     :root {
-      --bg-color: #121212;
-      --text-color: #f5f5f5;
-      --accent-color: #1e1e1e;
-      --highlight: #2a2a2a;
-      --primary: #0d6efd;
-    }
+  --bg-color: #0a0a0a;
+  --bg-gradient: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  --text-color: #f0f0f0;
+  --accent-color: #1a1a1a;
+  --highlight: #242424;
+  --primary: #4f8cff;
+  --primary-light: #87b6ff;
+  --hover: #3a3a3a;
+  --shadow: rgba(0, 0, 0, 0.6);
+  --glow: rgba(79, 140, 255, 0.3);
+  --glass: rgba(255, 255, 255, 0.1);
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: var(--bg-color);
-      color: var(--text-color);
-    }
+* {
+  box-sizing: border-box;
+}
 
-    .navbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--highlight);
-      padding: 1rem;
-    }
+body {
+  margin: 0;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg-gradient);
+  color: var(--text-color);
+  transition: all 0.3s ease;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-    .nav-links {
-      display: flex;
-      gap: 1rem;
-    }
+/* Animated background particles */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(79, 140, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(135, 182, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(79, 140, 255, 0.05) 0%, transparent 50%);
+  z-index: -1;
+  animation: float 20s ease-in-out infinite;
+}
 
-    .nav-links #openSidebar {
-      color: rgb(152, 152, 246);
-    }
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+}
 
-    .nav-links a {
-      color: var(--text-color);
-      text-decoration: none;
-    }
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(36, 36, 36, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem 2rem;
+  box-shadow: 0 8px 32px var(--shadow);
+  position: sticky;
+  top: 0;
+  z-index: 1001;
+  transition: all 0.3s ease;
+}
 
-    .menu-toggle {
-      display: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
+.navbar:hover {
+  background: rgba(36, 36, 36, 0.98);
+  box-shadow: 0 12px 40px var(--shadow);
+}
 
-    @media (max-width: 600px) {
-      .nav-links {
-        display: none;
-        flex-direction: column;
-        background: var(--accent-color);
-        padding: 1rem;
-      }
+.navbar strong {
+  font-size: 1.4rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 20px var(--glow);
+  animation: pulse 2s ease-in-out infinite;
+}
 
-      .nav-links.show {
-        display: flex;
-      }
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
 
-      .menu-toggle {
-        display: block;
-      }
-    }
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
 
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: -250px;
-      width: 250px;
-      height: 100%;
-      background: var(--highlight);
-      padding: 2rem 1rem;
-      transition: left 0.3s ease;
-      z-index: 1000;
-    }
+.nav-links a {
+  color: var(--text-color);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
 
-    .sidebar.show {
-      left: 0;
-    }
+.nav-links a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--glass), transparent);
+  transition: left 0.6s ease;
+}
 
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      display: none;
-      z-index: 900;
-    }
+.nav-links a:hover::before {
+  left: 100%;
+}
 
-    .overlay.show {
-      display: block;
-    }
+.nav-links a:hover {
+  background: var(--hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--shadow);
+}
 
-    .sidebar a {
-      color: var(--text-color);
-      display: block;
-      margin: 1rem 0;
-      text-decoration: none;
-    }
+.nav-links #openSidebar {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  border-radius: 12px;
+  font-weight: 600;
+  box-shadow: 0 4px 15px var(--glow);
+}
 
-    .carousel-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1rem;
-      margin: 4rem auto;
-      max-width: 800px;
-      padding: 0 1rem;
-    }
+.nav-links #openSidebar:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 25px var(--glow);
+}
 
-    .arrow-btn {
-      font-size: 2rem;
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: var(--text-color);
-      transition: transform 0.2s ease;
-    }
+.menu-toggle {
+  display: none;
+  font-size: 1.7rem;
+  cursor: pointer;
+  color: var(--text-color);
+  transition: all 0.3s ease;
+}
 
-    .arrow-btn:hover {
-      transform: scale(1.2);
-    }
+.menu-toggle:hover {
+  color: var(--primary);
+  transform: scale(1.1);
+}
 
-    .carousel {
-      position: relative;
-      width: 400px;
-      height: 250px;
-      background: var(--accent-color);
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-    }
+@media (max-width: 600px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    background: rgba(26, 26, 26, 0.95);
+    backdrop-filter: blur(20px);
+    padding: 1.5rem;
+    width: 100%;
+    position: absolute;
+    top: 70px;
+    right: 0;
+    box-shadow: 0 8px 32px var(--shadow);
+    border-radius: 0 0 20px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 
-    .carousel img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+  .nav-links.show {
+    display: flex;
+    animation: slideDown 0.3s ease;
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -280px;
+  width: 280px;
+  height: 100%;
+  background: rgba(36, 36, 36, 0.95);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2rem 1.5rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1000;
+  box-shadow: 4px 0 20px var(--shadow);
+}
+
+.sidebar.show {
+  left: 0;
+  box-shadow: 4px 0 40px var(--shadow);
+}
+
+.sidebar h3 {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 2rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.sidebar a {
+  color: var(--text-color);
+  display: block;
+  margin: 1.5rem 0;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--glass), transparent);
+  transition: left 0.6s ease;
+}
+
+.sidebar a:hover::before {
+  left: 100%;
+}
+
+.sidebar a:hover {
+  color: var(--primary-light);
+  background: var(--hover);
+  transform: translateX(8px);
+  box-shadow: 0 4px 15px var(--shadow);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: none;
+  z-index: 900;
+  transition: all 0.3s ease;
+}
+
+.overlay.show {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.carousel-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin: 6rem auto;
+  max-width: 1000px;
+  padding: 0 2rem;
+}
+
+.arrow-btn {
+  font-size: 2.5rem;
+  background: rgba(79, 140, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(79, 140, 255, 0.3);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+  color: var(--primary);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.arrow-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: var(--glow);
+  border-radius: 50%;
+  transition: all 0.4s ease;
+  transform: translate(-50%, -50%);
+}
+
+.arrow-btn:hover::before {
+  width: 100%;
+  height: 100%;
+}
+
+.arrow-btn:hover {
+  transform: scale(1.15);
+  background: rgba(79, 140, 255, 0.2);
+  border-color: var(--primary);
+  box-shadow: 0 8px 25px var(--glow);
+  color: var(--primary-light);
+}
+
+.arrow-btn:active {
+  transform: scale(1.05);
+}
+
+.carousel {
+  position: relative;
+  width: 600px;
+  height: 350px;
+  background: var(--accent-color);
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 
+    0 20px 60px var(--shadow),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.carousel:hover {
+  transform: translateY(-8px);
+  box-shadow: 
+    0 30px 80px var(--shadow),
+    0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 0 40px var(--glow);
+}
+
+.carousel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: brightness(0.9) contrast(1.1);
+}
+
+.carousel img:hover {
+  transform: scale(1.05);
+  filter: brightness(1) contrast(1.2);
+}
+
+.carousel img[src=""] {
+  background: linear-gradient(90deg, var(--accent-color) 25%, var(--highlight) 50%, var(--accent-color) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (max-width: 768px) {
+  .carousel-wrapper {
+    gap: 1rem;
+    margin: 4rem auto;
+    padding: 0 1rem;
+  }
+  
+  .carousel {
+    width: 100%;
+    max-width: 400px;
+    height: 250px;
+  }
+  
+  .arrow-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel {
+    height: 200px;
+  }
+  
+  .arrow-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 1.5rem;
+  }
+  
+  .carousel-wrapper {
+    gap: 0.5rem;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--accent-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
+}
   </style>
 </head>
 <body>
@@ -159,16 +444,18 @@
     <h3>Sidebar</h3>
     <a href="#">Dashboard</a>
     <a href="#">Settings</a>
+    <a href="#">Gallery</a>
+    <a href="#">Profile</a>
     <a href="#" id="closeSidebar">Close</a>
   </div>
   <div class="overlay" id="overlay"></div>
 
   <div class="carousel-wrapper">
-    <button class="arrow-btn" id="prev"><</button>
+    <button class="arrow-btn" id="prev">‹</button>
     <div class="carousel">
       <img id="carouselImage" src="" alt="Slide Image" />
     </div>
-    <button class="arrow-btn" id="next">></button>
+    <button class="arrow-btn" id="next">›</button>
   </div>
 
   <script>
@@ -183,7 +470,16 @@
     const carouselImage = document.getElementById("carouselImage");
 
     function showImage(index) {
-      carouselImage.src = images[index];
+      carouselImage.style.opacity = '0.7';
+      carouselImage.style.transform = 'scale(0.95)';
+      
+      setTimeout(() => {
+        carouselImage.src = images[index];
+        carouselImage.onload = () => {
+          carouselImage.style.opacity = '1';
+          carouselImage.style.transform = 'scale(1)';
+        };
+      }, 150);
     }
 
     document.getElementById("prev").addEventListener("click", () => {
@@ -196,8 +492,35 @@
       showImage(current);
     });
 
-    showImage(current);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        document.getElementById("prev").click();
+      } else if (e.key === 'ArrowRight') {
+        document.getElementById("next").click();
+      }
+    });
 
+    let autoPlay = false;
+    let autoPlayInterval;
+
+    function startAutoPlay() {
+      if (autoPlay) return;
+      autoPlay = true;
+      autoPlayInterval = setInterval(() => {
+        document.getElementById("next").click();
+      }, 4000);
+    }
+
+    function stopAutoPlay() {
+      autoPlay = false;
+      clearInterval(autoPlayInterval);
+    }
+
+    document.querySelector('.carousel-wrapper').addEventListener('mouseenter', stopAutoPlay);
+    document.querySelector('.carousel-wrapper').addEventListener('mouseleave', startAutoPlay);
+
+    showImage(current);
+    
     document.getElementById("menuToggle").addEventListener("click", () => {
       document.getElementById("navLinks").classList.toggle("show");
     });
@@ -205,12 +528,14 @@
     const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
 
-    document.getElementById("openSidebar").addEventListener("click", () => {
+    document.getElementById("openSidebar").addEventListener("click", (e) => {
+      e.preventDefault();
       sidebar.classList.add("show");
       overlay.classList.add("show");
     });
 
-    document.getElementById("closeSidebar").addEventListener("click", () => {
+    document.getElementById("closeSidebar").addEventListener("click", (e) => {
+      e.preventDefault();
       sidebar.classList.remove("show");
       overlay.classList.remove("show");
     });
@@ -218,6 +543,13 @@
     overlay.addEventListener("click", () => {
       sidebar.classList.remove("show");
       overlay.classList.remove("show");
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        sidebar.classList.remove("show");
+        overlay.classList.remove("show");
+      }
     });
   </script>
 
